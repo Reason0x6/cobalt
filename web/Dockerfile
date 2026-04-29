@@ -17,6 +17,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 FROM deps AS build
 
+COPY .git .git
 COPY web web
 COPY packages/version-info packages/version-info
 
