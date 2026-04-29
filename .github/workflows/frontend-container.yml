@@ -12,27 +12,6 @@ on:
       - "packages/version-info/**"
       - "web/**"
   workflow_dispatch:
-    inputs:
-      web_default_api:
-        description: Default API URL baked into the frontend image.
-        required: false
-        default: "https://api.cobalt.tools/"
-      web_host:
-        description: Optional host name for sitemap/meta generation, without protocol.
-        required: false
-        default: ""
-      web_plausible_host:
-        description: Optional Plausible receiver host name.
-        required: false
-        default: ""
-      enable_deprecated_youtube_hls:
-        description: Enable the deprecated YouTube HLS setting in the UI.
-        required: false
-        type: choice
-        default: "false"
-        options:
-          - "false"
-          - "true"
 
 env:
   REGISTRY: ghcr.io
@@ -44,11 +23,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    env:
-      WEB_DEFAULT_API: ${{ github.event.inputs.web_default_api || vars.WEB_DEFAULT_API || 'https://api.cobalt.tools/' }}
-      WEB_HOST: ${{ github.event.inputs.web_host || vars.WEB_HOST || '' }}
-      WEB_PLAUSIBLE_HOST: ${{ github.event.inputs.web_plausible_host || vars.WEB_PLAUSIBLE_HOST || '' }}
-      ENABLE_DEPRECATED_YOUTUBE_HLS: ${{ github.event.inputs.enable_deprecated_youtube_hls || vars.ENABLE_DEPRECATED_YOUTUBE_HLS || 'false' }}
 
     steps:
       - name: Checkout repository
@@ -99,11 +73,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            WEB_DEFAULT_API=${{ env.WEB_DEFAULT_API }}
-            WEB_HOST=${{ env.WEB_HOST }}
-            WEB_PLAUSIBLE_HOST=${{ env.WEB_PLAUSIBLE_HOST }}
-            ENABLE_DEPRECATED_YOUTUBE_HLS=${{ env.ENABLE_DEPRECATED_YOUTUBE_HLS }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

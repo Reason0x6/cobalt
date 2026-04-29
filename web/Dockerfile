@@ -21,10 +21,10 @@ COPY .git .git
 COPY web web
 COPY packages/version-info packages/version-info
 
-ARG WEB_DEFAULT_API
-ARG WEB_HOST
-ARG WEB_PLAUSIBLE_HOST
-ARG ENABLE_DEPRECATED_YOUTUBE_HLS=false
+ARG WEB_DEFAULT_API=__COBALT_WEB_DEFAULT_API__
+ARG WEB_HOST=__COBALT_WEB_HOST__
+ARG WEB_PLAUSIBLE_HOST=__COBALT_WEB_PLAUSIBLE_HOST__
+ARG ENABLE_DEPRECATED_YOUTUBE_HLS=__COBALT_ENABLE_DEPRECATED_YOUTUBE_HLS__
 
 ENV WEB_DEFAULT_API=$WEB_DEFAULT_API
 ENV WEB_HOST=$WEB_HOST
@@ -36,7 +36,10 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 FROM nginx:1.27-alpine AS runtime
 COPY web/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/web/build /usr/share/nginx/html
+COPY web/docker-entrypoint.sh /docker-entrypoint.d/40-cobalt-runtime-config.sh
+COPY --from=build /app/web/build /opt/cobalt-template
+
+RUN chmod +x /docker-entrypoint.d/40-cobalt-runtime-config.sh
 
 EXPOSE 80
 
